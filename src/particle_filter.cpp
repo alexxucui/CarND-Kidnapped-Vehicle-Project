@@ -79,12 +79,49 @@ void ParticleFilter::prediction(double delta_t, double std_pos[], double velocit
 }
 
 // Combine it in the next function
-void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations) {
-	// TODO: Find the predicted measurement that is closest to each observed measurement and assign the 
-	//   observed measurement to this particular landmark.
-	// NOTE: this method will NOT be called by the grading code. But you will probably find it useful to 
-	//   implement this method and use it as a helper during the updateWeights phase.
+void ParticleFilter::dataAssociation(std::vector<LandmarkObs> predicted, std::vector<LandmarkObs>& observations)
+{
+    // TODO: Find the predicted measurement that is closest to each observed measurement and assign the
+    //   observed measurement to this particular landmark.
+    // NOTE: this method will NOT be called by the grading code. But you will probably find it useful to
+    //   implement this method and use it as a helper during the updateWeights phase.
 
+    for(int i=0;i<observations.size(); ++i)
+    {
+         LandmarkObs  obs_land = observations[i];
+         double lowest_dist, new_x,new_y;
+         for(int j=0;j<predicted.size(); ++j)
+         {
+             LandmarkObs pred_land = predicted[j];
+             double distance = dist(pred_land.x,pred_land.y, obs_land.x,obs_land.y);
+             switch(j)
+             {
+                 case 0:{
+                        new_x = pred_land.x;
+                        new_y = pred_land.y;
+                        lowest_dist=distance;
+                     break;
+                 }
+                 default:
+                 {
+                     if(distance<lowest_dist){
+                          new_x = pred_land.x;
+                          new_y = pred_land.y;
+                          lowest_dist=distance;
+
+                      }
+                     break;
+                 }
+              }
+          }//end inner for
+
+
+     observations[i].y= new_y;
+     observations[i].x= new_x;
+
+    }
+
+    return;
 }
 
 void ParticleFilter::updateWeights(double sensor_range, double std_landmark[], 
